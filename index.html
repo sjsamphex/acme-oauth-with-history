@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <script
+      src="https://unpkg.com/react@17/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      window.GITHUB_CLIENT_ID = '<%= GITHUB_CLIENT_ID %>';
+
+      class App extends React.Component {
+        constructor() {
+          super();
+          this.state = {
+            auth: {},
+          };
+          this.logout = this.logout.bind(this);
+        }
+        logout() {
+          window.localStorage.removeItem('token');
+          this.setState({ auth: {} });
+        }
+        async exchangeTokenForUser() {
+          const token = window.localStorage.getItem('token');
+          if (token) {
+            const auth = (
+              await axios.get('/api/auth', {
+                headers: {
+                  authorization: token,
+                },
+              })
+            ).data;
+            this.setState({ auth });
+          }
+        }
+        componentDidMount() {
+          this.exchangeTokenForUser();
+        }
+        async login(credential) {
+          const { token } = (await axios.post('/api/auth', credential)).data;
+          window.localStorage.setItem('token', token);
+          this.exchangeTokenForUser();
+        }
+        render() {
+          const { auth } = this.state;
+          const { login, logout } = this;
+          if (!auth.id) {
+            return (
+              <a
+                href={`https://github.com/login/oauth/authorize?client_id=${window.GITHUB_CLIENT_ID}`}
+              >
+                Login to Github
+              </a>
+            );
+          } else {
+            return (
+              <div>
+                <button onClick={logout}>Logout ({auth.username})</button>
+              </div>
+            );
+          }
+        }
+      }
+      ReactDOM.render(<App />, document.querySelector('#root'));
+    </script>
+  </body>
+</html>
