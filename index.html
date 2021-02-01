@@ -66,9 +66,18 @@
               </a>
             );
           } else {
+            // console.log('auth details:', auth);
             return (
               <div>
                 <button onClick={logout}>Logout ({auth.username})</button>
+                <div>
+                  User Logins:
+                  <ul>
+                    {auth.userlogins.map((login) => (
+                      <li key="login.id">{login.loginDate}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             );
           }
