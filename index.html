@@ -74,7 +74,7 @@
                   User Logins:
                   <ul>
                     {auth.userlogins.map((login) => (
-                      <li key="login.id">{login.loginDate}</li>
+                      <li key={login.id}>{login.loginDate}</li>
                     ))}
                   </ul>
                 </div>
