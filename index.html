@@ -74,7 +74,9 @@
                   User Logins:
                   <ul>
                     {auth.userlogins.map((login) => (
-                      <li key={login.id}>{login.loginDate}</li>
+                      <li key={login.id}>
+                        {new Date(login.loginDate).toGMTString()}
+                      </li>
                     ))}
                   </ul>
                 </div>
